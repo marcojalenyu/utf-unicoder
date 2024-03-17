@@ -25,10 +25,9 @@ def convert_to_utf16(unicode):
     # add left with D800 and right with DC00
     final_left = hex(0xD800 + int(left, 2))
     final_right = hex(0xDC00 + int(right, 2))
+    utf16_string = (final_left[2:] + final_right[2:]).upper()
 
-    utf32_string = (final_left[2:] + final_right[2:]).upper()
-
-    return utf32_string
+    return utf16_string
 
 def convert_to_utf32(unicode):
     return unicode.zfill(8)
