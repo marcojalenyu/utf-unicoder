@@ -18,14 +18,7 @@ def convert_to_utf16(unicode):
     pass
 
 def convert_to_utf32(unicode):
-    utf32_string = ""
-
-    # zero extension
-    for i in range(0, 8 - len(unicode)):
-        utf32_string += '0'
-    
-    utf32_string += unicode
-    return utf32_string
+    return unicode.zfill(8)
 
 
 def main():
