@@ -17,17 +17,12 @@ def convert_to_utf8(unicode):
 def convert_to_utf16(unicode):
     subtracted_val = int(unicode, 16) - 0x10000
     binary_val = bin(subtracted_val)[2:].zfill(20) 
+    left, right = binary_val[0:10], binary_val[10:20]
 
-    # split to 10 bits each
-    left = binary_val[0:10]
-    right = binary_val[10:20]
+    final_left = hex(0xD800 + int(left, 2))[2:].upper()
+    final_right = hex(0xDC00 + int(right, 2))[2:].upper()
 
-    # add left with D800 and right with DC00
-    final_left = hex(0xD800 + int(left, 2))
-    final_right = hex(0xDC00 + int(right, 2))
-    utf16_string = (final_left[2:] + final_right[2:]).upper()
-
-    return utf16_string
+    return final_left + final_right
 
 def convert_to_utf32(unicode):
     return unicode.zfill(8)
