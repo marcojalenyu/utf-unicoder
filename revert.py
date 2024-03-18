@@ -1,6 +1,8 @@
 def utf32_to_unicode(utf32_string):
     utf32_hex = utf32_string.replace(' ', '')
-    return [f"U+{utf32_hex[i:i+8]}" for i in range(0, len(utf32_hex), 8)]
+    # Remove leading zeros
+    utf32_hex = utf32_hex.lstrip('0')
+    return [f"U+{utf32_hex[i:i+8].upper()}" for i in range(0, len(utf32_hex), 8)]
 
 def utf16_to_unicode(utf16_string):
     utf16_hex = utf16_string.replace(' ', '')
@@ -22,7 +24,47 @@ def utf16_to_unicode(utf16_string):
     return unicode_points
 
 def decode_utf8(utf8_bytes):
-    pass
+    utf8_hex = utf8_bytes.replace(' ', '')
+    n = len(utf8_hex)
+    unicode_points = []
+    # Convert to binary
+    binary_str = bin(int(utf8_hex, 16))[2:].zfill(n * 4)
+    # Debug
+    # print(binary_str)    
+    # If value is over 1FFFFF, it's not valid UTF-8
+    if n > 8 or binary_str[0:5] == '11111':
+        return []
+    # If value is 0xxxxxxx, it's a single byte character
+    elif binary_str[0] == '0':
+        # Remove the '0b' prefix
+        return [f"U+{hex(int(binary_str, 2))[2:].upper()}"]
+    # If value is 110xxxxx 10xxxxxx, it's a two byte character
+    elif binary_str[0:3] == '110' and binary_str[8:10] == '10':
+        # Remove 110 and 10 from the binary string
+        unicode_points.append(binary_str[3:8])
+        unicode_points.append(binary_str[10:16])
+        # Convert to hexadecimal and return
+        return [f"U+{hex(int(''.join(unicode_points), 2))[2:].upper()}"]
+    # If value is 0800 to FFFF, it's a three byte character
+    elif binary_str[0:4] == '1110' and binary_str[8:10] == '10':
+        unicode_points.append(binary_str[4:8])
+        unicode_points.append(binary_str[10:16])
+        unicode_points.append(binary_str[18:24])
+        return [f"U+{hex(int(''.join(unicode_points), 2))[2:].upper()}"]
+    # If value is 10000 to 1FFFFF, it's a four byte character
+    elif binary_str[0:5] == '11110' and binary_str[8:10] == '10':
+        byte1 = binary_str[5:8]
+        byte2 = binary_str[10:16]
+        byte3 = binary_str[18:24]
+        byte4 = binary_str[26:32]
+        unicode_points.append(byte1)
+        unicode_points.append(byte2)
+        unicode_points.append(byte3)
+        unicode_points.append(byte4)
+        return [f"U+{hex(int(''.join(unicode_points), 2))[2:].upper()}"]
+    print("Invalid UTF-8 string.")
+    unicode_points = []
+    return unicode_points
 
 def bytes_to_unicode(bytes_str):
     # Converts a byte string to Unicode code points
@@ -42,18 +84,19 @@ def main():
 
     if choice == '1':
         # Assuming the UTF-8 string is input as a regular string
-        decoded_str = decode_utf8(input_string.encode('utf-8'))
-        unicode_points = bytes_to_unicode(decoded_str)
+        unicode_points = decode_utf8(input_string)
+        # unicode_points = bytes_to_unicode(decoded_str)
     elif choice == '2':
         unicode_points = utf16_to_unicode(input_string)
     elif choice == '3':
         unicode_points = utf32_to_unicode(input_string)
     else:
         print("Invalid choice.")
-        return
 
     print("Unicode points:")
     print(", ".join(unicode_points))
+
+    main()
 
 if __name__ == "__main__":
     main()
