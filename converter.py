@@ -16,27 +16,22 @@ def convert_to_utf8(unicode):
     num_of_bits = len(bin_unicode) - 2
     str_unicode = str(bin_unicode)
     str_unicode = str_unicode[2:]
-    bytes_req = 4 if num_of_bits > 16 else 3 if num_of_bits > 11 else 2 if num_of_bits > 7 else 1
     res = ""
+    bytes_req = 4 if num_of_bits > 16 else 3 if num_of_bits > 11 else 2 if num_of_bits > 7 else 1
 
-    while len(res) / 8 < bytes_req - 1:
-        res = str_unicode[-6:] + res
-        res = "10" + res
-        str_unicode = str_unicode[:-6]
-
-    temp = 3 if bytes_req == 4 else 4 if bytes_req == 3 else 5 if bytes_req == 2 else 7
-    str_unicode = str_unicode.zfill(temp)
-    res = str_unicode + res
-
-    if (num_of_bits > 16):
-        res = "11110" + res
-    elif (num_of_bits > 11):
-        res = "1110" + res
-    elif (num_of_bits > 7):
-        res = "110" + res
+    if bytes_req == 1:
+        unicode = unicode[-2:]
+        return unicode.zfill(2)
     else:
-        res = "0" + res
-    
+        for i in range(bytes_req - 1):
+            res = "10" + str_unicode[-6:] + res
+            str_unicode = str_unicode[:-6] 
+        
+        rem = 8 - bytes_req + 1
+        res = "0" + str_unicode[-rem:] + res
+
+        for i in range(bytes_req):
+            res = "1" + res
     res = hex(int(res, 2)).upper()
     return res[2:]
 
