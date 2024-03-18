@@ -42,6 +42,7 @@ def convert_to_utf8(unicode):
 
 def convert_to_utf16(unicode):
     if int(unicode, 16) <= 0xFFFF:
+        unicode = unicode[-4:]
         return unicode.zfill(4)
     else:
         subtracted_val = int(unicode, 16) - 0x10000
@@ -54,6 +55,7 @@ def convert_to_utf16(unicode):
         return final_left + final_right
 
 def convert_to_utf32(unicode):
+    unicode = unicode[-8:]
     return unicode.zfill(8)
 
 def main():
