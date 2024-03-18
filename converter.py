@@ -1,4 +1,3 @@
-import math
 def is_valid_unicode(unicode):
     valid_chars = set('0123456789ABCDEF')
     min = 0x0000
