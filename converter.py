@@ -12,10 +12,37 @@ def is_valid_unicode(unicode):
     return False
 
 def convert_to_utf8(unicode):
-    pass
+    bin_unicode = bin(int(unicode, 16))
+    num_of_bits = len(bin_unicode) - 2
+    str_unicode = str(bin_unicode)
+    str_unicode = str_unicode[2:]
+    bytes_req = 4 if num_of_bits > 16 else 3 if num_of_bits > 11 else 2 if num_of_bits > 7 else 1
+    res = ""
+
+    while len(res) / 8 < bytes_req - 1:
+        res = str_unicode[-6:] + res
+        res = "10" + res
+        str_unicode = str_unicode[:-6]
+
+    temp = 3 if bytes_req == 4 else 4 if bytes_req == 3 else 5 if bytes_req == 2 else 7
+    str_unicode = str_unicode.zfill(temp)
+    res = str_unicode + res
+
+    if (num_of_bits > 16):
+        res = "11110" + res
+    elif (num_of_bits > 11):
+        res = "1110" + res
+    elif (num_of_bits > 7):
+        res = "110" + res
+    else:
+        res = "0" + res
+    
+    res = hex(int(res, 2)).upper()
+    return res[2:]
 
 def convert_to_utf16(unicode):
     if int(unicode, 16) <= 0xFFFF:
+        unicode = unicode[-4:]
         return unicode.zfill(4)
     else:
         subtracted_val = int(unicode, 16) - 0x10000
@@ -28,6 +55,7 @@ def convert_to_utf16(unicode):
         return final_left + final_right
 
 def convert_to_utf32(unicode):
+    unicode = unicode[-8:]
     return unicode.zfill(8)
 
 def main():
@@ -43,7 +71,7 @@ def main():
             utf32 = convert_to_utf32(input_unicode)
 
             print("Outputs:")
-            print("UTF-8:", utf8)
+            print("UTF-8:", ' '.join(utf8[i:i+2] for i in range(0, len(utf8), 2)))
             print("UTF-16:", ' '.join(utf16[i:i+2] for i in range(0, len(utf16), 2)))
             print("UTF-32:", ' '.join(utf32[i:i+2] for i in range(0, len(utf32), 2)))
         else:
