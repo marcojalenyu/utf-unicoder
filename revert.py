@@ -5,23 +5,27 @@ def utf32_to_unicode(utf32_string):
     return [f"U+{utf32_hex[i:i+8].upper()}" for i in range(0, len(utf32_hex), 8)]
 
 def utf16_to_unicode(utf16_string):
-    utf16_hex = utf16_string.replace(' ', '')
+    utf16_hex = utf16_string.replace(' ', '').upper()  # Convert to uppercase to normalize input
     unicode_points = []
     i = 0
     while i < len(utf16_hex):
-        hex_val = utf16_hex[i:i+4]
-        if len(hex_val) < 4:
-            break
+        # Extract 4 characters (if available), padding with leading zeros if less than 4 characters
+        hex_val = utf16_hex[i:i+4].zfill(4)
         high_val = int(hex_val, 16)
         if 0xD800 <= high_val <= 0xDBFF:
-            low_val = int(utf16_hex[i+4:i+8], 16)
+            # This is a high surrogate; look ahead for the low surrogate
+            low_val_hex = utf16_hex[i+4:i+8].zfill(4)  # Pad low value hex if it's less than 4 nibbles
+            low_val = int(low_val_hex, 16)
             combined = ((high_val - 0xD800) << 10 | (low_val - 0xDC00)) + 0x10000
             unicode_points.append(f"U+{hex(combined)[2:].upper()}")
-            i += 8
-            continue
-        unicode_points.append(f"U+{hex(high_val)[2:].upper()}")
-        i += 4
+            i += 8  # Move past the surrogate pair
+        else:
+            # No need for surrogate handling; direct representation
+            unicode_points.append(f"U+{hex_val.upper()}")
+            i += 4  # Move to the next set of characters
     return unicode_points
+
+
 
 def decode_utf8(utf8_bytes):
     utf8_hex = utf8_bytes.replace(' ', '')
