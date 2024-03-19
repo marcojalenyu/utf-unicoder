@@ -1,11 +1,50 @@
-def utf32_to_unicode(utf32_string):
-    utf32_hex = utf32_string.replace(' ', '')
+"""
+    This function checks if the input is an 1-8 digit hexadecimal number.
+
+    Args:
+        input_str: A string of hexadecimal values.
+    
+    Returns:
+        True if the input is a valid hexadecimal number, False otherwise.
+"""
+def is_valid_hex(input_str):
+    # Define valid hexadecimal characters
+    hex_chars = "0123456789ABCDEF"
+    # If length is greater than 8 (excluding spaces), it's not a valid hexadecimal number
+    if len(input_str) > 8:
+        return False
+    # If the string contains non-hexadecimal characters, it's not a valid hexadecimal number
+    return all(char in hex_chars for char in input_str)
+
+"""
+    This function takes a UTF-32 string and returns the Unicode code point.
+
+    Args:
+        utf32_str: A string of hexadecimal values separated by spaces.
+
+    Returns:
+        A list of Unicode code points in the format "U+XXXXXXXX".
+"""
+def utf32_to_unicode(utf32_str):
     # Remove leading zeros
-    utf32_hex = utf32_hex.lstrip('0')
+    utf32_hex = utf32_str.lstrip('0')
+    # Check if UTF-32 is out of range
+    if int(utf32_hex, 16) > 0x10FFFF:
+        return []
+    # Return as is if it's within range
     return [f"U+{utf32_hex[i:i+8].upper()}" for i in range(0, len(utf32_hex), 8)]
 
-def utf16_to_unicode(utf16_string):
-    utf16_hex = utf16_string.replace(' ', '').upper()  # Convert to uppercase to normalize input
+"""
+    This function takes a UTF-16 string and returns the Unicode code point.
+
+    Args:
+        utf16_str: A string of hexadecimal values separated by spaces.
+    
+    Returns:
+        A list of Unicode code points in the format "U+XXXXXXXX".
+"""
+def utf16_to_unicode(utf16_str):
+    utf16_hex = utf16_str.replace(' ', '').upper()  # Convert to uppercase to normalize input
     unicode_points = []
     i = 0
     while i < len(utf16_hex):
@@ -25,10 +64,17 @@ def utf16_to_unicode(utf16_string):
             i += 4  # Move to the next set of characters
     return unicode_points
 
+""""
+    This function takes a UTF-8 string and returns the Unicode code point.
 
-
-def decode_utf8(utf8_bytes):
-    utf8_hex = utf8_bytes.replace(' ', '')
+    Args:   
+        utf8_str: A string of hexadecimal values separated by spaces.
+    
+    Returns:
+        A list of Unicode code points in the format "U+XXXXXXXX".
+"""
+def utf8_to_unicode(utf8_str):
+    utf8_hex = utf8_str.replace(' ', '')
     n = len(utf8_hex)
     unicode_points = []
     # Convert to binary
@@ -70,36 +116,53 @@ def decode_utf8(utf8_bytes):
     unicode_points = []
     return unicode_points
 
-def bytes_to_unicode(bytes_str):
-    # Converts a byte string to Unicode code points
-    unicode_points = []
-    for char in bytes_str:
-        unicode_points.append(f"U+{ord(char):04X}")
-    return unicode_points
-
-def main():
+"""
+    Main function to run the program.
+"""
+def main():    
+    # Print the menu
     print("Choose encoding type of input string:")
-    print("1. UTF-8")
-    print("2. UTF-16")
-    print("3. UTF-32")
-    choice = input("Enter choice (1/2/3): ")
+    print("1. UTF-8 to Unicode")
+    print("2. UTF-16 to Unicode")
+    print("3. UTF-32 to Unicode")
+    print("4. Exit")
 
+    # Get UTF conversion choice
+    choice = input("Enter choice (1/2/3/4): ")
+    # Exit if the user chooses 4 or an invalid choice
+    if choice == '4':
+        exit()
+    elif choice not in ['1', '2', '3']:
+        print("Invalid choice.\n")
+        main()
+    
+    # Get the input string
     input_string = input("Enter encoded string: ")
+    # Remove all spaces from the input string and convert to uppercase
+    input_string = input_string.replace(' ', '').upper()
+    # Checks if the input is a valid hexadecimal number
+    isHex = is_valid_hex(input_string)
 
-    if choice == '1':
-        # Assuming the UTF-8 string is input as a regular string
-        unicode_points = decode_utf8(input_string)
-        # unicode_points = bytes_to_unicode(decoded_str)
-    elif choice == '2':
-        unicode_points = utf16_to_unicode(input_string)
-    elif choice == '3':
-        unicode_points = utf32_to_unicode(input_string)
+    # If the input is a valid hexadecimal number, convert it to Unicode
+    if isHex:
+        # Convert the input string to Unicode based on the user's choice
+        if choice == '1':
+            unicode_points = utf8_to_unicode(input_string)
+        elif choice == '2':
+            unicode_points = utf16_to_unicode(input_string)
+        elif choice == '3':
+            unicode_points = utf32_to_unicode(input_string)
+        
+        # If the Unicode points list is empty, the input is invalid
+        if(len(unicode_points) == 0):
+            print("Invalid UTF: Out of range.\n")
+        else:
+            print("Unicode points:")
+            print(", ".join(unicode_points) + "\n")
     else:
-        print("Invalid choice.")
+        print("Invalid UTF: Either out of range or contains invalid digits.\n")
 
-    print("Unicode points:")
-    print(", ".join(unicode_points))
-
+    # Loops back to the main menu
     main()
 
 if __name__ == "__main__":
