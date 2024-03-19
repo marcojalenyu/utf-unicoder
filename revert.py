@@ -48,22 +48,27 @@ def utf16_to_unicode(utf16_str):
     unicode_points = []
     i = 0
     while i < len(utf16_hex):
-        # Extract 4 characters (if available), padding with leading zeros if less than 4 characters
         hex_val = utf16_hex[i:i+4].zfill(4)
         high_val = int(hex_val, 16)
         if 0xD800 <= high_val <= 0xDBFF:
             # This is a high surrogate; look ahead for the low surrogate
-            low_val_hex = utf16_hex[i+4:i+8].zfill(4)  # Pad low value hex if it's less than 4 nibbles
+            if i + 4 >= len(utf16_hex):
+                return []
+            low_val_hex = utf16_hex[i+4:i+8].zfill(4)
             low_val = int(low_val_hex, 16)
-            combined = ((high_val - 0xD800) << 10 | (low_val - 0xDC00)) + 0x10000
-            unicode_points.append(f"U+{hex(combined)[2:].upper()}")
-            i += 8  # Move past the surrogate pair
+            if 0xDC00 <= low_val <= 0xDFFF:
+                combined = ((high_val - 0xD800) << 10 | (low_val - 0xDC00)) + 0x10000
+                unicode_points.append(f"U+{hex(combined)[2:].upper()}")
+                i += 8  # Move past the surrogate pair
+            else:
+                return [] 
+        elif 0xDC00 <= high_val <= 0xDFFF:
+            return []
         else:
             # No need for surrogate handling; direct representation
             unicode_points.append(f"U+{hex_val.upper()}")
             i += 4  # Move to the next set of characters
     return unicode_points
-
 """"
     This function takes a UTF-8 string and returns the Unicode code point.
 
