@@ -74,46 +74,48 @@ def utf16_to_unicode(utf16_str):
         A list of Unicode code points in the format "U+XXXXXXXX".
 """
 def utf8_to_unicode(utf8_str):
-    utf8_hex = utf8_str.replace(' ', '')
-    n = len(utf8_hex)
+    # Initialize the list of Unicode points
     unicode_points = []
-    # Convert to binary
-    binary_str = bin(int(utf8_hex, 16))[2:].zfill(n * 4)
-    # Debug
-    # print(binary_str)    
-    # If value is over 1FFFFF, it's not valid UTF-8
-    if n > 8 or binary_str[0:5] == '11111':
-        return []
-    # If value is 0xxxxxxx, it's a single byte character
-    elif binary_str[0] == '0':
-        # Remove the '0b' prefix
-        return [f"U+{hex(int(binary_str, 2))[2:].upper()}"]
-    # If value is 110xxxxx 10xxxxxx, it's a two byte character
-    elif binary_str[0:3] == '110' and binary_str[8:10] == '10':
-        # Remove 110 and 10 from the binary string
-        unicode_points.append(binary_str[3:8])
-        unicode_points.append(binary_str[10:16])
+    utf8_bin = bin(int(utf8_str, 16))[2:].zfill(len(utf8_str) * 4)
+    # If utf8_bin is only 1 nibble long, extend it to 8 bits
+    if len(utf8_bin) == 4:
+        utf8_bin = utf8_bin.zfill(8)
+
+    # Get the length of the binary string
+    utf8_bin_len = len(utf8_bin)
+
+    # If value is 0xxxxxxx, means it is a 1-byte code point
+    if utf8_bin[0] == '0' and utf8_bin_len == 8:
+        return [f"U+{hex(int(utf8_bin, 2))[2:].upper()}"]
+    
+    # If value is 110xxxxx 10xxxxxx, it is a 2-byte code point
+    elif utf8_bin[0:3] == '110' and utf8_bin[8:10] == '10' and utf8_bin_len == 16:
+        # Remove 110 and 10 from the binary string and append to the list
+        unicode_points.append(utf8_bin[3:8])
+        unicode_points.append(utf8_bin[10:16])
         # Convert to hexadecimal and return
         return [f"U+{hex(int(''.join(unicode_points), 2))[2:].upper()}"]
-    # If value is 0800 to FFFF, it's a three byte character
-    elif binary_str[0:4] == '1110' and binary_str[8:10] == '10':
-        unicode_points.append(binary_str[4:8])
-        unicode_points.append(binary_str[10:16])
-        unicode_points.append(binary_str[18:24])
+    
+    # If value is 1110xxxx 10xxxxxx 10xxxxxx, it is a 3-byte code point
+    elif utf8_bin[0:4] == '1110' and utf8_bin[8:10] == '10' and utf8_bin[16:18] == '10' and utf8_bin_len == 24:
+        # Remove 1110, 10, and 10 from the binary string and append to the list
+        unicode_points.append(utf8_bin[4:8])
+        unicode_points.append(utf8_bin[10:16])
+        unicode_points.append(utf8_bin[18:24])
+        # Convert to hexadecimal and return
         return [f"U+{hex(int(''.join(unicode_points), 2))[2:].upper()}"]
-    # If value is 10000 to 1FFFFF, it's a four byte character
-    elif binary_str[0:5] == '11110' and binary_str[8:10] == '10':
-        byte1 = binary_str[5:8]
-        byte2 = binary_str[10:16]
-        byte3 = binary_str[18:24]
-        byte4 = binary_str[26:32]
-        unicode_points.append(byte1)
-        unicode_points.append(byte2)
-        unicode_points.append(byte3)
-        unicode_points.append(byte4)
+    
+    # If value is 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx, it is a 4-byte code point
+    elif utf8_bin[0:5] == '11110' and utf8_bin[8:10] == '10' and utf8_bin[16:18] == '10' and utf8_bin[24:26] == '10' and utf8_bin_len == 32:
+        # Remove 11110, 10, 10, and 10 from the binary string and append to the list
+        unicode_points.append(utf8_bin[5:8])
+        unicode_points.append(utf8_bin[10:16])
+        unicode_points.append(utf8_bin[18:24])
+        unicode_points.append(utf8_bin[26:32])
+        # Convert to hexadecimal and return
         return [f"U+{hex(int(''.join(unicode_points), 2))[2:].upper()}"]
-    print("Invalid UTF-8 string.")
-    unicode_points = []
+    
+    # If the input is not a valid UTF-8 string, return an empty list
     return unicode_points
 
 """
