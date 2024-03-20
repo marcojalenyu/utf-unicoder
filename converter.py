@@ -12,6 +12,10 @@ def is_valid_unicode(unicode):
     return False
 
 def convert_to_utf8(unicode):
+    if int(unicode, 16) <= 0xFF:
+        unicode = unicode[-2:]
+        return unicode.zfill(2)
+    
     bin_unicode = bin(int(unicode, 16))
     num_of_bits = len(bin_unicode) - 2
     str_unicode = str(bin_unicode)
@@ -44,15 +48,15 @@ def convert_to_utf16(unicode):
     if int(unicode, 16) <= 0xFFFF:
         unicode = unicode[-4:]
         return unicode.zfill(4)
-    else:
-        subtracted_val = int(unicode, 16) - 0x10000
-        binary_val = bin(subtracted_val)[2:].zfill(20) 
-        left, right = binary_val[0:10], binary_val[10:20]
+    
+    subtracted_val = int(unicode, 16) - 0x10000
+    binary_val = bin(subtracted_val)[2:].zfill(20) 
+    left, right = binary_val[0:10], binary_val[10:20]
 
-        final_left = hex(0xD800 + int(left, 2))[2:].upper()
-        final_right = hex(0xDC00 + int(right, 2))[2:].upper()
+    final_left = hex(0xD800 + int(left, 2))[2:].upper()
+    final_right = hex(0xDC00 + int(right, 2))[2:].upper()
 
-        return final_left + final_right
+    return final_left + final_right
 
 def convert_to_utf32(unicode):
     unicode = unicode[-8:]
