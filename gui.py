@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import filedialog
 import converter
 import reverter
 
@@ -51,11 +52,27 @@ def revertFromUTF32():
     outputBox.config(state="disabled")
 
 def exportOutput():
+    # Ask user to select a file path to save the output
+    file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+
+    # If the user cancels the file dialog, return
+    if file_path == "":
+        return
+
+    # Get the output text from the text box
     outputText = outputBox.get(1.0, END)
-    with open("output.txt", "w") as file:
+    with open(file_path, "w") as file:
         file.write(outputText)
 
 root = Tk()
+
+# Title and icon for the window
+root.title("Unicode Converter/Translator")
+
+try:
+    root.iconbitmap("unicode.ico")
+except:
+    pass
 
 titleLabel = Label(root, text="Unicode Converter/Translator")
 titleLabel.pack()
