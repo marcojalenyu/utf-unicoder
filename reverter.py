@@ -28,12 +28,12 @@ def is_valid_hex(input_str):
     Returns:
         A list of Unicode code points in the format "U+XXXXXXXX".
 """
-def utf32_to_unicode(utf32_str):
+def utf32_to_unicode(utf32_hex):
     # Remove leading zeros (unless all 0)
-    if all(char == '0' for char in utf32_str):
+    if all(char == '0' for char in utf32_hex):
         utf32_hex = '0'
     else:
-        utf32_hex = utf32_str.lstrip('0')
+        utf32_hex = utf32_hex.lstrip('0')
     # Check if UTF-32 is out of range
     if int(utf32_hex, 16) > 0x10FFFF:
         return []
@@ -49,11 +49,12 @@ def utf32_to_unicode(utf32_str):
     Returns:
         A list of Unicode code points in the format "U+XXXXXXXX".
 """
-def utf16_to_unicode(utf16_str):
-    # Convert to uppercase to normalize input
-    utf16_hex = utf16_str.replace(' ', '').upper()  
-    # Remove leading zeros
-    utf16_hex = utf16_hex.lstrip('0')
+def utf16_to_unicode(utf16_hex):
+    # Remove leading zeros (unless all 0)
+    if all(char == '0' for char in utf16_hex):
+        utf16_hex = '0'
+    else:
+        utf16_hex = utf16_hex.lstrip('0')
     # Range is 0x0000 to 0xFFFF
     if (int(utf16_hex, 16) <= 0xFFFF):
         return [f"U+{utf16_hex.upper()}"]
@@ -79,6 +80,12 @@ def utf16_to_unicode(utf16_str):
 def utf8_to_unicode(utf8_str):
     # Initialize the list of Unicode points
     unicode_points = []
+    # Remove leading zeros (unless all 0)
+    if all(char == '0' for char in utf8_str):
+        utf8_str = '0'
+    else:
+        utf8_str = utf8_str.lstrip('0')
+    # Convert the hexadecimal string to binary
     utf8_bin = bin(int(utf8_str, 16))[2:].zfill(len(utf8_str) * 4)
     # If utf8_bin is only 1 nibble long, extend it to 8 bits
     if len(utf8_bin) == 4:
