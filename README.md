@@ -10,6 +10,7 @@
 # Contents of the Repository
 This repository contains the following:
 - Python Application: Unicode Converter/Translator
+  - Either run gui.py or go to csarch2-simulation\dist\gui\gui
 - Screenshots of program output
 - Short video
 
