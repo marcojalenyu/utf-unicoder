@@ -4,7 +4,7 @@ def is_valid_unicode(unicode):
     max = 0x10FFFF
 
     # check if value has valid characters and length
-    if (len(unicode) <= 6) and (all(char.upper() in valid_chars for char in unicode)):
+    if (all(char.upper() in valid_chars for char in unicode)):
         decimal_value = int(unicode, 16)
         
         if (decimal_value >= min) and (decimal_value <= max):
