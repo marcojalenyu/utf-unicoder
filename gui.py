@@ -101,7 +101,7 @@ inputEntry.pack()
 revertButtonFrame = Frame(root)
 revertButtonFrame.pack(padx=10, pady=10)
 
-revertLabel = Label(revertButtonFrame, text="Revert from:")
+revertLabel = Label(revertButtonFrame, text="Translate from:")
 revertLabel.grid(row=0, column=0)
 
 convertButton = Button(revertButtonFrame, text="UTF-8", command=revertFromUTF8)
