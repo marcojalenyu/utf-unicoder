@@ -3,7 +3,7 @@ import converter
 import reverter
 
 def convertToUTF8():
-    inputText = inputEntry.get()
+    inputText = convertInputEntry.get()
     outputText = converter.check_and_convert_to_utf8(inputText)
     outputBox.config(state="normal")
     outputBox.delete(1.0, END)
@@ -11,7 +11,7 @@ def convertToUTF8():
     outputBox.config(state="disabled")
 
 def convertToUTF16():
-    inputText = inputEntry.get()
+    inputText = convertInputEntry.get()
     outputText = converter.check_and_convert_to_utf16(inputText)
     outputBox.config(state="normal")
     outputBox.delete(1.0, END)
@@ -19,7 +19,7 @@ def convertToUTF16():
     outputBox.config(state="disabled")
 
 def convertToUTF32():
-    inputText = inputEntry.get()
+    inputText = convertInputEntry.get()
     outputText = converter.check_and_convert_to_utf32(inputText)
     outputBox.config(state="normal")
     outputBox.delete(1.0, END)
@@ -60,45 +60,58 @@ root = Tk()
 titleLabel = Label(root, text="Unicode Converter/Translator")
 titleLabel.pack()
 
-#input section
-inputLabel = Label(root, text="Input:")
+#convert input section
+inputLabel = Label(root, text="Unicode (U+) to UTF")
 inputLabel.pack()
 
-inputEntry = Entry(root, width=50)
-inputEntry.pack()
+convertInputFrame = Frame(root)
+convertInputFrame.pack()
+
+convertInputLabel = Label(convertInputFrame, text="U+")
+convertInputLabel.grid(row=0, column=0)
+
+convertInputEntry = Entry(convertInputFrame, width=30)
+convertInputEntry.grid(row=0, column=1)
 
 #Convert buttons
 convertButtonFrame = Frame(root)
 convertButtonFrame.pack(padx=10, pady=10)
 
-convertLabel = Label(convertButtonFrame, text="Convert from Unicode to UTF:")
-convertLabel.grid(row=0, column=0, columnspan=3)
+convertLabel = Label(convertButtonFrame, text="Convert to:")
+convertLabel.grid(row=0, column=0)
 
 convertButton = Button(convertButtonFrame, text="UTF-8", command=convertToUTF8)
-convertButton.grid(row=1, column=0, padx = 5)
+convertButton.grid(row=0, column=1, padx = 5)
 
 convertButton = Button(convertButtonFrame, text="UTF-16", command=convertToUTF16)
-convertButton.grid(row=1, column=1, padx = 5)
+convertButton.grid(row=0, column=2, padx = 5)
 
 convertButton = Button(convertButtonFrame, text="UTF-32", command=convertToUTF32)
-convertButton.grid(row=1, column=2, padx = 5)
+convertButton.grid(row=0, column=3, padx = 5)
 
+#revert input section
+
+inputLabel = Label(root, text="UTF to Unicode (U+)")
+inputLabel.pack()
+
+inputEntry = Entry(root, width=30)
+inputEntry.pack()
 
 #Revert Buttons
 revertButtonFrame = Frame(root)
 revertButtonFrame.pack(padx=10, pady=10)
 
-revertLabel = Label(revertButtonFrame, text="Revert from UTF to Unicode:")
-revertLabel.grid(row=0, column=0, columnspan=3)
+revertLabel = Label(revertButtonFrame, text="Revert from:")
+revertLabel.grid(row=0, column=0)
 
 convertButton = Button(revertButtonFrame, text="UTF-8", command=revertFromUTF8)
-convertButton.grid(row=1, column=0, padx = 5)
+convertButton.grid(row=0, column=1, padx = 5)
 
 convertButton = Button(revertButtonFrame, text="UTF-16", command=revertFromUTF16)
-convertButton.grid(row=1, column=1, padx = 5)
+convertButton.grid(row=0, column=2, padx = 5)
 
 convertButton = Button(revertButtonFrame, text="UTF-32", command=revertFromUTF32)
-convertButton.grid(row=1, column=2, padx = 5)
+convertButton.grid(row=0, column=3, padx = 5)
 
 #output section
 outputLabel = Label(root, text="Output:")
