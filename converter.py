@@ -62,10 +62,51 @@ def convert_to_utf32(unicode):
     unicode = unicode[-8:]
     return unicode.zfill(8)
 
+def check_and_convert_to_utf8(unicode):
+    unicode = unicode.replace(' ', '').upper()
+    try:
+        if is_valid_unicode(unicode):
+            unicode = unicode.upper()
+
+            utf8 = convert_to_utf8(unicode)
+
+            return f"UTF-8: {' '.join(utf8[i:i+2] for i in range(0, len(utf8), 2))}"
+        else:
+            return ("Invalid input.")
+    except ValueError:
+       return ("Error: Invalid Unicode input. Please provide valid Unicode text.")
+
+def check_and_convert_to_utf16(unicode):
+    unicode = unicode.replace(' ', '').upper()
+    try:
+        if is_valid_unicode(unicode):
+            unicode = unicode.upper()
+
+            utf16 = convert_to_utf16(unicode)
+
+            return f"UTF-16: {' '.join(utf16[i:i+2] for i in range(0, len(utf16), 2))}"
+        else:
+            return ("Invalid input.")
+    except ValueError:
+       return ("Error: Invalid Unicode input. Please provide valid Unicode text.")
+
+def check_and_convert_to_utf32(unicode):
+    unicode = unicode.replace(' ', '').upper()
+    try:
+        if is_valid_unicode(unicode):
+            unicode = unicode.upper()
+
+            utf32 = convert_to_utf32(unicode)
+
+            return f"UTF-32: {' '.join(utf32[i:i+2] for i in range(0, len(utf32), 2))}"
+        else:
+            return ("Invalid input.")
+    except ValueError:
+       return ("Error: Invalid Unicode input. Please provide valid Unicode text.")
+
 def main():
     print("---------Unicode Converter---------")
     input_unicode = input("Input (Unicode): U+")
-
     try:
         if is_valid_unicode(input_unicode):
             input_unicode = input_unicode.upper()
@@ -82,8 +123,6 @@ def main():
             print("Invalid input.")
     except ValueError:
         print("Error: Invalid Unicode input. Please provide valid Unicode text.")
-
-
 
 if __name__ == "__main__":
     main()
