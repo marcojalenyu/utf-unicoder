@@ -22,33 +22,25 @@ def convert_to_utf8(unicode):
     str_unicode = str_unicode[2:]
     
     if (num_of_bits > 16):
+        start = "11110"
         bytes_req = 4
         str_unicode = str_unicode.zfill(21)
     elif (num_of_bits > 11):
+        start = "1110"
         bytes_req = 3
         str_unicode = str_unicode.zfill(16)
     else:
+        start = "110"
         bytes_req = 2
         str_unicode = str_unicode.zfill(11)
 
     res = ""
-
     for i in range(bytes_req - 1):
         res = str_unicode[-6:] + res
         res = "10" + res
         str_unicode = str_unicode[:-6]
 
-    res = str_unicode + res
-
-    if (num_of_bits > 16):
-        res = "11110" + res
-    elif (num_of_bits > 11):
-        res = "1110" + res
-    elif (num_of_bits > 7):
-        res = "110" + res
-    else:
-        res = "0" + res
-    
+    res = start + str_unicode + res
     res = hex(int(res, 2)).upper()
     return res[2:]
 
