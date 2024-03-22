@@ -62,7 +62,7 @@ titleLabel.pack()
 
 #convert input section
 inputLabel = Label(root, text="Unicode (U+) to UTF")
-inputLabel.pack()
+inputLabel.pack(pady=(5,0))
 
 convertInputFrame = Frame(root)
 convertInputFrame.pack()
@@ -92,7 +92,7 @@ convertButton.grid(row=0, column=3, padx = 5)
 #revert input section
 
 inputLabel = Label(root, text="UTF to Unicode (U+)")
-inputLabel.pack()
+inputLabel.pack(pady=(5,0))
 
 inputEntry = Entry(root, width=30)
 inputEntry.pack()
