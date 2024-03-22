@@ -10,6 +10,9 @@
 def is_valid_hex(input_str):
     # Define valid hexadecimal characters
     hex_chars = "0123456789ABCDEF"
+    # If the input is empty, it's not a valid hexadecimal number
+    if input_str == "":
+        return False
     # If length is greater than 8 (excluding spaces), it's not a valid hexadecimal number
     if len(input_str) > 8:
         return False
@@ -26,8 +29,11 @@ def is_valid_hex(input_str):
         A list of Unicode code points in the format "U+XXXXXXXX".
 """
 def utf32_to_unicode(utf32_str):
-    # Remove leading zeros
-    utf32_hex = utf32_str.lstrip('0')
+    # Remove leading zeros (unless all 0)
+    if all(char == '0' for char in utf32_str):
+        utf32_hex = '0'
+    else:
+        utf32_hex = utf32_str.lstrip('0')
     # Check if UTF-32 is out of range
     if int(utf32_hex, 16) > 0x10FFFF:
         return []
@@ -44,31 +50,23 @@ def utf32_to_unicode(utf32_str):
         A list of Unicode code points in the format "U+XXXXXXXX".
 """
 def utf16_to_unicode(utf16_str):
-    utf16_hex = utf16_str.replace(' ', '').upper()  # Convert to uppercase to normalize input
-    unicode_points = []
-    i = 0
-    while i < len(utf16_hex):
-        hex_val = utf16_hex[i:i+4].zfill(4)
-        high_val = int(hex_val, 16)
-        if 0xD800 <= high_val <= 0xDBFF:
-            # This is a high surrogate; look ahead for the low surrogate
-            if i + 4 >= len(utf16_hex):
-                return []
-            low_val_hex = utf16_hex[i+4:i+8].zfill(4)
-            low_val = int(low_val_hex, 16)
-            if 0xDC00 <= low_val <= 0xDFFF:
-                combined = ((high_val - 0xD800) << 10 | (low_val - 0xDC00)) + 0x10000
-                unicode_points.append(f"U+{hex(combined)[2:].upper()}")
-                i += 8  # Move past the surrogate pair
-            else:
-                return [] 
-        elif 0xDC00 <= high_val <= 0xDFFF:
-            return []
-        else:
-            # No need for surrogate handling; direct representation
-            unicode_points.append(f"U+{hex_val.upper()}")
-            i += 4  # Move to the next set of characters
-    return unicode_points
+    # Convert to uppercase to normalize input
+    utf16_hex = utf16_str.replace(' ', '').upper()  
+    # Remove leading zeros
+    utf16_hex = utf16_hex.lstrip('0')
+    # Range is 0x0000 to 0xFFFF
+    if (int(utf16_hex, 16) <= 0xFFFF):
+        return [f"U+{utf16_hex.upper()}"]
+    # If not, check if high surrogate and low surrogate are within range
+    elif (0xD800 <= int(utf16_hex[0:4], 16) <= 0xDBFF) and (0xDC00 <= int(utf16_hex[4:8], 16) <= 0xDFFF):
+        # Deduct 0xD800 from the high surrogate and 0xDC00 from the low surrogate
+        high_val = int(utf16_hex[0:4], 16) - 0xD800
+        low_val = int(utf16_hex[4:8], 16) - 0xDC00
+        # Combine the high and low surrogates
+        combined = (high_val << 10 | low_val) + 0x10000
+        return [f"U+{hex(combined)[2:].upper()}"]
+    return []
+
 """"
     This function takes a UTF-8 string and returns the Unicode code point.
 
