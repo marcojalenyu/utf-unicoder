@@ -12,7 +12,7 @@ def is_valid_unicode(unicode):
     return False
 
 def convert_to_utf8(unicode):
-    if int(unicode, 16) <= 0xFF:
+    if 0x00 <= int(unicode, 16) <= 0x7F:
         unicode = unicode[-2:]
         return unicode.zfill(2)
     
