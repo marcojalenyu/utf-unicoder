@@ -1,6 +1,6 @@
-# CSARCH2 S13 Group 9 Simulation Project
+# UTF-Unicoder: A Unicode Converter/Translator App
 
-# Group Members
+# Developers:
   - Gamboa, Rafael
   - Jocson, Nicole
   - Montenegro, Jaycee
